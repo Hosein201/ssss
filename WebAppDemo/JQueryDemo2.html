@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="Content/main.css" rel="stylesheet" />
+</head>
+<body class="jquery-demo-2">
+
+    <main class="container">
+        <div class="row">
+            <div class="row">
+                <div class="col-md-12">
+                    <select id="location" class="form-control">
+                        <option value="-1">یک سالن را انتخاب کنید...</option>
+                    </select>
+                </div>
+            </div>
+            <div id="wrapper">
+
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" id="name" placeholder="نام" />
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control" id="family" placeholder="نام خانوادگی " />
+
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-success btn-sm btn-block" id="save-btn">
+                    <span class="fa fa-save"></span>
+                    ذخیره
+                </button>
+            </div>
+        </div>
+          
+    </main>
+
+    <script src="Scripts/jquery-2.2.4.js"></script>
+    <script src="Scripts/jquery-demo-2.js"></script>
+    <script>
+        $(function () {
+            $('#save-btn').on('click', sendData);
+            function sendData() {
+                $('#save-btn').off('click');
+                $('#save-btn').addClass('disabled');
+
+                let firstName = $('#name').val();
+                let lastName = $('#family').val();
+
+                $.ajax({
+                    method: "POST",
+                    url: "/Action.aspx",
+                    data: { name: firstName, family: lastName }
+                })
+                    .done(function (data) {
+                        $('#name').parent().parent()
+                            .prepend(
+                                $('<div id="response-alert">')
+                                    .addClass('alert alert-success alert-dismissable')
+                                    .text(data)
+                                    .append($('<a href="#" class="close" data-dismiss="alert"><span class="fa fa-close"></span></a>'))
+                            );
+                    })
+                    .fail(function () {
+                        $('#name').parent().parent()
+                            .prepend(
+                                $('<div id="response-alert">').addClass('alert alert-danger').text('خطا در درج اطلاعات')
+                            );
+                    })
+                    .always(function () {
+                        $('#save-btn').on('click', sendData);
+                        $('#save-btn').removeClass('disabled');
+
+                        setTimeout(function () {
+                            $('#response-alert').remove();
+                            //$('#response-alert').slideUp(3000);
+
+                        }, 2000);
+                    });
+
+                $('#name').val('');
+                $('#task-due-date').val('');
+
+            }
+
+        })();
+    </script>
+</body>
+</html>
